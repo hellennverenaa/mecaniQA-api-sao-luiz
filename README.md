@@ -2,7 +2,7 @@
 
 > **Equipe:** São Luiz  
 > **Disciplina:** Desenvolvimento Web Orientado a Objetos (UniFTC)  
-> **Professor / Avaliador:** Prof. Dr. Lucas Almeida Silva (`lasilva`)  
+> **Professor / Avaliador:** Prof. Lucas Almeida Silva (`lasilva`)  
 > **Prazo do Entregável Técnico:** 29/08/2026  
 
 ---
