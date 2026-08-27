@@ -1,0 +1,504 @@
+{
+  "info": {
+    "_postman_id": "34b23029-a9ae-4fb8-99d2-408126edca59",
+    "name": "mecaniQA-sao-luiz",
+    "description": "Suíte de testes de integração das oito User Stories da API MecaniQA: US01 a US04 para peças e US05 a US08 para serviços. Inclui requisições de sucesso e cenários de ID inexistente com retorno 404.\n\nA API utiliza armazenamento em memória. Os dados e os códigos são reiniciados sempre que a aplicação é encerrada.\n\nExecute primeiro a requisição de cadastro de cada módulo. O código retornado será salvo automaticamente nas variáveis `pecaId` ou `servicoId` e reutilizado nas requisições seguintes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Endereço local da API MecaniQA."
+    },
+    {
+      "key": "pecaId",
+      "value": "1",
+      "type": "string",
+      "description": "Código da peça utilizado nas operações de busca, atualização e exclusão."
+    },
+    {
+      "key": "servicoId",
+      "value": "1",
+      "type": "string",
+      "description": "Código do serviço utilizado nas operações de busca, atualização e exclusão."
+    }
+  ],
+  "item": [
+    {
+      "name": "Peças",
+      "description": "Operações CRUD disponíveis em `/api/pecas`. `tamanho` e `cor` são opcionais e podem ser enviados como `null`.",
+      "item": [
+        {
+          "name": "US01 - Cadastrar peça",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const resposta = pm.response.json();",
+                  "if (resposta.codigo) {",
+                  "    pm.collectionVariables.set(\"pecaId\", resposta.codigo);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Pastilha de freio\",\n  \"codigoBarras\": \"7891234567890\",\n  \"fornecedorMarca\": \"Marca Exemplo\",\n  \"quantidadeEstoque\": 10,\n  \"precoCusto\": 50.0,\n  \"precoVenda\": 80.0,\n  \"categoria\": \"FREIOS\",\n  \"tamanho\": null,\n  \"cor\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pecas",
+            "description": "Cadastra uma peça e retorna `201 Created` com a entidade criada. `codigo`, `dataCadastro` e `dataAtualizacao` são gerados pelo servidor. O código retornado é salvo automaticamente em `pecaId`."
+          },
+          "response": []
+        },
+        {
+          "name": "US02 - Listar peças",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas",
+            "description": "Retorna `200 OK` com a lista de peças cadastradas."
+          },
+          "response": []
+        },
+        {
+          "name": "US02 - Buscar peça por código",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/{{pecaId}}",
+            "description": "Busca a peça indicada pela variável `pecaId`. Retorna `200 OK` quando encontrada ou `404 Not Found` quando inexistente."
+          },
+          "response": []
+        },
+        {
+          "name": "US03 - Atualizar peça",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Pastilha de freio atualizada\",\n  \"codigoBarras\": \"7891234567890\",\n  \"fornecedorMarca\": \"Marca Exemplo\",\n  \"quantidadeEstoque\": 8,\n  \"precoCusto\": 55.0,\n  \"precoVenda\": 85.0,\n  \"categoria\": \"FREIOS\",\n  \"tamanho\": null,\n  \"cor\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pecas/{{pecaId}}",
+            "description": "Atualiza a peça indicada por `pecaId`. Retorna `200 OK` com a entidade atualizada ou `404 Not Found`."
+          },
+          "response": []
+        },
+        {
+          "name": "US04 - Excluir peça",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/{{pecaId}}",
+            "description": "Exclui a peça indicada por `pecaId`. Retorna `204 No Content` ou `404 Not Found`."
+          },
+          "response": []
+        },
+        {
+          "name": "US02 - Buscar peça inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/999999",
+            "description": "Valida o retorno `404 Not Found` ao buscar uma peça inexistente."
+          },
+          "response": []
+        },
+        {
+          "name": "US03 - Atualizar peça inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Peça inexistente\",\n  \"codigoBarras\": \"0000000000000\",\n  \"fornecedorMarca\": \"Marca Exemplo\",\n  \"quantidadeEstoque\": 1,\n  \"precoCusto\": 10.0,\n  \"precoVenda\": 20.0,\n  \"categoria\": \"ACESSORIOS\",\n  \"tamanho\": null,\n  \"cor\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pecas/999999",
+            "description": "Valida o retorno `404 Not Found` ao tentar atualizar uma peça inexistente."
+          },
+          "response": []
+        },
+        {
+          "name": "US04 - Excluir peça inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/pecas/999999",
+            "description": "Valida o retorno `404 Not Found` ao tentar excluir uma peça inexistente."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Serviços",
+      "description": "Operações CRUD disponíveis em `/api/servicos`. Requer que o módulo de serviços esteja integrado à versão executada da aplicação.",
+      "item": [
+        {
+          "name": "US05 - Cadastrar serviço",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const resposta = pm.response.json();",
+                  "if (resposta.codigo) {",
+                  "    pm.collectionVariables.set(\"servicoId\", resposta.codigo);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Troca de óleo\",\n  \"tempoEstimadoMinutos\": 30,\n  \"custoTabelado\": 120.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/servicos",
+            "description": "Cadastra um serviço e retorna `201 Created`. Código e datas são gerados pelo servidor. O código retornado é salvo automaticamente em `servicoId`."
+          },
+          "response": []
+        },
+        {
+          "name": "US06 - Listar serviços",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos",
+            "description": "Retorna `200 OK` com a lista de serviços cadastrados."
+          },
+          "response": []
+        },
+        {
+          "name": "US06 - Buscar serviço por código",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/{{servicoId}}",
+            "description": "Busca o serviço indicado por `servicoId`. Retorna `200 OK` ou `404 Not Found`."
+          },
+          "response": []
+        },
+        {
+          "name": "US07 - Atualizar serviço",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Troca de óleo completa\",\n  \"tempoEstimadoMinutos\": 45,\n  \"custoTabelado\": 150.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/servicos/{{servicoId}}",
+            "description": "Atualiza o serviço indicado por `servicoId`. Retorna `200 OK` ou `404 Not Found`."
+          },
+          "response": []
+        },
+        {
+          "name": "US08 - Excluir serviço",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/{{servicoId}}",
+            "description": "Exclui o serviço indicado por `servicoId`. Retorna `204 No Content` ou `404 Not Found`."
+          },
+          "response": []
+        },
+        {
+          "name": "US06 - Buscar serviço inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/999999",
+            "description": "Valida o retorno `404 Not Found` ao buscar um serviço inexistente."
+          },
+          "response": []
+        },
+        {
+          "name": "US07 - Atualizar serviço inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Serviço inexistente\",\n  \"tempoEstimadoMinutos\": 10,\n  \"custoTabelado\": 20.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/servicos/999999",
+            "description": "Valida o retorno `404 Not Found` ao tentar atualizar um serviço inexistente."
+          },
+          "response": []
+        },
+        {
+          "name": "US08 - Excluir serviço inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Retorna 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/servicos/999999",
+            "description": "Valida o retorno `404 Not Found` ao tentar excluir um serviço inexistente."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
