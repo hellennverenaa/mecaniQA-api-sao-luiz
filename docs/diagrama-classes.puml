@@ -1,0 +1,199 @@
+@startuml DiagramaClasses_MecaniQA_OAT1
+
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package "br.com.mecaniQA.api.model" {
+    enum CategoriaPeca {
+        + MOTOR
+        + SUSPENSAO
+        + FREIOS
+        + ELETRICA
+        + ACESSORIOS
+    }
+
+    class Peca {
+        - codigo : Long
+        - nome : String
+        - codigoBarras : String
+        - fornecedorMarca : String
+        - quantidadeEstoque : Integer
+        - precoCusto : Double
+        - precoVenda : Double
+        - categoria : CategoriaPeca
+        - tamanho : String
+        - cor : String
+        - dataCadastro : LocalDateTime
+        - dataAtualizacao : LocalDateTime
+        + Peca()
+        + Peca(codigo : Long, nome : String, codigoBarras : String, fornecedorMarca : String, quantidadeEstoque : Integer, precoCusto : Double, precoVenda : Double, categoria : CategoriaPeca, tamanho : String, cor : String, dataCadastro : LocalDateTime, dataAtualizacao : LocalDateTime)
+        + getCodigo() : Long
+        + setCodigo(codigo : Long) : void
+        + getNome() : String
+        + setNome(nome : String) : void
+        + getCodigoBarras() : String
+        + setCodigoBarras(codigoBarras : String) : void
+        + getFornecedorMarca() : String
+        + setFornecedorMarca(fornecedorMarca : String) : void
+        + getQuantidadeEstoque() : Integer
+        + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
+        + getPrecoCusto() : Double
+        + setPrecoCusto(precoCusto : Double) : void
+        + getPrecoVenda() : Double
+        + setPrecoVenda(precoVenda : Double) : void
+        + getCategoria() : CategoriaPeca
+        + setCategoria(categoria : CategoriaPeca) : void
+        + getTamanho() : String
+        + setTamanho(tamanho : String) : void
+        + getCor() : String
+        + setCor(cor : String) : void
+        + getDataCadastro() : LocalDateTime
+        + setDataCadastro(dataCadastro : LocalDateTime) : void
+        + getDataAtualizacao() : LocalDateTime
+        + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
+    }
+
+    class Servico {
+        - codigo : Long
+        - nome : String
+        - tempoEstimadoMinutos : Integer
+        - custoTabelado : Double
+        - dataCriacao : LocalDateTime
+        - dataAtualizacao : LocalDateTime
+        + Servico()
+        + Servico(codigo : Long, nome : String, tempoEstimadoMinutos : Integer, custoTabelado : Double, dataCriacao : LocalDateTime, dataAtualizacao : LocalDateTime)
+        + getCodigo() : Long
+        + setCodigo(codigo : Long) : void
+        + getNome() : String
+        + setNome(nome : String) : void
+        + getTempoEstimadoMinutos() : Integer
+        + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
+        + getCustoTabelado() : Double
+        + setCustoTabelado(custoTabelado : Double) : void
+        + getDataCriacao() : LocalDateTime
+        + setDataCriacao(dataCriacao : LocalDateTime) : void
+        + getDataAtualizacao() : LocalDateTime
+        + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
+    }
+}
+
+package "br.com.mecaniQA.api.dto" {
+    class PecaRequestDTO {
+        - nome : String
+        - codigoBarras : String
+        - fornecedorMarca : String
+        - quantidadeEstoque : Integer
+        - precoCusto : Double
+        - precoVenda : Double
+        - categoria : CategoriaPeca
+        - tamanho : String
+        - cor : String
+        + PecaRequestDTO()
+        + PecaRequestDTO(nome : String, codigoBarras : String, fornecedorMarca : String, quantidadeEstoque : Integer, precoCusto : Double, precoVenda : Double, categoria : CategoriaPeca, tamanho : String, cor : String)
+        + getNome() : String
+        + setNome(nome : String) : void
+        + getCodigoBarras() : String
+        + setCodigoBarras(codigoBarras : String) : void
+        + getFornecedorMarca() : String
+        + setFornecedorMarca(fornecedorMarca : String) : void
+        + getQuantidadeEstoque() : Integer
+        + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
+        + getPrecoCusto() : Double
+        + setPrecoCusto(precoCusto : Double) : void
+        + getPrecoVenda() : Double
+        + setPrecoVenda(precoVenda : Double) : void
+        + getCategoria() : CategoriaPeca
+        + setCategoria(categoria : CategoriaPeca) : void
+        + getTamanho() : String
+        + setTamanho(tamanho : String) : void
+        + getCor() : String
+        + setCor(cor : String) : void
+    }
+
+    class ServicoRequestDTO {
+        - nome : String
+        - tempoEstimadoMinutos : Integer
+        - custoTabelado : Double
+        + ServicoRequestDTO()
+        + ServicoRequestDTO(nome : String, tempoEstimadoMinutos : Integer, custoTabelado : Double)
+        + getNome() : String
+        + setNome(nome : String) : void
+        + getTempoEstimadoMinutos() : Integer
+        + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
+        + getCustoTabelado() : Double
+        + setCustoTabelado(custoTabelado : Double) : void
+    }
+}
+
+package "br.com.mecaniQA.api.repository" {
+    class PecaRepository {
+        - {static} INSTANCE : PecaRepository
+        - pecas : List<Peca>
+        - proximoCodigo : Long
+        - PecaRepository()
+        + {static} getInstance() : PecaRepository
+        + salvar(dto : PecaRequestDTO) : Peca
+        + listarTodos() : List<Peca>
+        + buscarPorCodigo(codigo : Long) : Optional<Peca>
+        + atualizar(codigo : Long, dto : PecaRequestDTO) : Optional<Peca>
+        + excluir(codigo : Long) : boolean
+    }
+
+    class ServicoRepository {
+        - {static} INSTANCE : ServicoRepository
+        - servicos : List<Servico>
+        - proximoCodigo : Long
+        - ServicoRepository()
+        + {static} getInstance() : ServicoRepository
+        + salvar(dto : ServicoRequestDTO) : Servico
+        + listarTodos() : List<Servico>
+        + buscarPorCodigo(codigo : Long) : Optional<Servico>
+        + atualizar(codigo : Long, dto : ServicoRequestDTO) : Optional<Servico>
+        + excluir(codigo : Long) : boolean
+    }
+}
+
+package "br.com.mecaniQA.api.controller" {
+    class PecaController {
+        - pecaRepository : PecaRepository
+        + PecaController()
+        + cadastrar(dto : PecaRequestDTO) : ResponseEntity<Peca>
+        + listar() : ResponseEntity<List<Peca>>
+        + buscarPorCodigo(codigo : Long) : ResponseEntity<Peca>
+        + atualizar(codigo : Long, dto : PecaRequestDTO) : ResponseEntity<Peca>
+        + excluir(codigo : Long) : ResponseEntity<Void>
+    }
+
+    class ServicoController {
+        - servicoRepository : ServicoRepository
+        + ServicoController()
+        + cadastrar(dto : ServicoRequestDTO) : ResponseEntity<Servico>
+        + listar() : ResponseEntity<List<Servico>>
+        + buscarPorCodigo(codigo : Long) : ResponseEntity<Servico>
+        + atualizar(codigo : Long, dto : ServicoRequestDTO) : ResponseEntity<Servico>
+        + excluir(codigo : Long) : ResponseEntity<Void>
+    }
+}
+
+' Relacionamentos
+Peca --> "1" CategoriaPeca : categoria
+PecaRequestDTO --> "1" CategoriaPeca : categoria
+
+PecaRepository o-- Peca : gerencia
+ServicoRepository o-- Servico : gerencia
+
+PecaController ..> PecaRepository : utiliza
+PecaController ..> PecaRequestDTO : recebe
+PecaController ..> Peca : retorna
+
+ServicoController ..> ServicoRepository : utiliza
+ServicoController ..> ServicoRequestDTO : recebe
+ServicoController ..> Servico : retorna
+
+PecaRepository ..> PecaRequestDTO : consome
+ServicoRepository ..> ServicoRequestDTO : consome
+
+@enduml
