@@ -18,7 +18,7 @@ public class ServicoRepository {
     private ServicoRepository() {
     }
 
-    public static synchronized ServicoRepository getInstance() {
+    public static ServicoRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ServicoRepository();
         }
@@ -26,7 +26,7 @@ public class ServicoRepository {
         return INSTANCE;
     }
 
-    public synchronized Servico salvar(ServicoRequestDTO dto) {
+    public Servico salvar(ServicoRequestDTO dto) {
         LocalDateTime agora = LocalDateTime.now();
         Servico servico = new Servico(
                 proximoCodigo++,
@@ -51,7 +51,7 @@ public class ServicoRepository {
                 .findFirst();
     }
 
-    public synchronized Optional<Servico> atualizar(Long codigo, ServicoRequestDTO dto) {
+    public Optional<Servico> atualizar(Long codigo, ServicoRequestDTO dto) {
         Optional<Servico> servicoEncontrado = buscarPorCodigo(codigo);
 
         servicoEncontrado.ifPresent(servico -> {
@@ -64,7 +64,7 @@ public class ServicoRepository {
         return servicoEncontrado;
     }
 
-    public synchronized boolean excluir(Long codigo) {
+    public boolean excluir(Long codigo) {
         return servicos.removeIf(servico -> servico.getCodigo().equals(codigo));
     }
 }

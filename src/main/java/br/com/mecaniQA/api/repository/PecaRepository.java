@@ -18,7 +18,7 @@ public class PecaRepository {
     private PecaRepository() {
     }
 
-    public static synchronized PecaRepository getInstance() {
+    public static PecaRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PecaRepository();
         }
@@ -26,7 +26,7 @@ public class PecaRepository {
         return INSTANCE;
     }
 
-    public synchronized Peca salvar(PecaRequestDTO dto) {
+    public Peca salvar(PecaRequestDTO dto) {
         LocalDateTime agora = LocalDateTime.now();
         Peca peca = new Peca(
                 proximoCodigo++,
@@ -57,7 +57,7 @@ public class PecaRepository {
                 .findFirst();
     }
 
-    public synchronized Optional<Peca> atualizar(Long codigo, PecaRequestDTO dto) {
+    public Optional<Peca> atualizar(Long codigo, PecaRequestDTO dto) {
         Optional<Peca> pecaEncontrada = buscarPorCodigo(codigo);
 
         pecaEncontrada.ifPresent(peca -> {
@@ -76,7 +76,7 @@ public class PecaRepository {
         return pecaEncontrada;
     }
 
-    public synchronized boolean excluir(Long codigo) {
+    public boolean excluir(Long codigo) {
         return pecas.removeIf(peca -> peca.getCodigo().equals(codigo));
     }
 }

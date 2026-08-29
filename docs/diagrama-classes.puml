@@ -96,7 +96,7 @@ class PecaRepository <<Singleton>> {
     - Long proximoCodigo
     --
     - PecaRepository()
-    + {static} synchronized getInstance() : PecaRepository
+    + {static} getInstance() : PecaRepository
     + salvar(PecaRequestDTO) : Peca
     + listarTodos() : List<Peca>
     + buscarPorCodigo(Long) : Optional<Peca>
@@ -158,7 +158,7 @@ class ServicoRepository <<Singleton>> {
     - Long proximoCodigo
     --
     - ServicoRepository()
-    + {static} synchronized getInstance() : ServicoRepository
+    + {static} getInstance() : ServicoRepository
     + salvar(ServicoRequestDTO) : Servico
     + listarTodos() : List<Servico>
     + buscarPorCodigo(Long) : Optional<Servico>
