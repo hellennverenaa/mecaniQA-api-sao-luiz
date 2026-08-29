@@ -1,199 +1,189 @@
-@startuml DiagramaClasses_MecaniQA_OAT1
-
+@startuml
+skinparam backgroundColor #FFFFFF
 skinparam classAttributeIconSize 0
-skinparam monochrome false
+skinparam roundcorner 4
 skinparam shadowing false
-skinparam linetype ortho
-skinparam packageStyle rectangle
 
-package "br.com.mecaniQA.api.model" {
-    enum CategoriaPeca {
-        + MOTOR
-        + SUSPENSAO
-        + FREIOS
-        + ELETRICA
-        + ACESSORIOS
-    }
-
-    class Peca {
-        - codigo : Long
-        - nome : String
-        - codigoBarras : String
-        - fornecedorMarca : String
-        - quantidadeEstoque : Integer
-        - precoCusto : Double
-        - precoVenda : Double
-        - categoria : CategoriaPeca
-        - tamanho : String
-        - cor : String
-        - dataCadastro : LocalDateTime
-        - dataAtualizacao : LocalDateTime
-        + Peca()
-        + Peca(codigo : Long, nome : String, codigoBarras : String, fornecedorMarca : String, quantidadeEstoque : Integer, precoCusto : Double, precoVenda : Double, categoria : CategoriaPeca, tamanho : String, cor : String, dataCadastro : LocalDateTime, dataAtualizacao : LocalDateTime)
-        + getCodigo() : Long
-        + setCodigo(codigo : Long) : void
-        + getNome() : String
-        + setNome(nome : String) : void
-        + getCodigoBarras() : String
-        + setCodigoBarras(codigoBarras : String) : void
-        + getFornecedorMarca() : String
-        + setFornecedorMarca(fornecedorMarca : String) : void
-        + getQuantidadeEstoque() : Integer
-        + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
-        + getPrecoCusto() : Double
-        + setPrecoCusto(precoCusto : Double) : void
-        + getPrecoVenda() : Double
-        + setPrecoVenda(precoVenda : Double) : void
-        + getCategoria() : CategoriaPeca
-        + setCategoria(categoria : CategoriaPeca) : void
-        + getTamanho() : String
-        + setTamanho(tamanho : String) : void
-        + getCor() : String
-        + setCor(cor : String) : void
-        + getDataCadastro() : LocalDateTime
-        + setDataCadastro(dataCadastro : LocalDateTime) : void
-        + getDataAtualizacao() : LocalDateTime
-        + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
-    }
-
-    class Servico {
-        - codigo : Long
-        - nome : String
-        - tempoEstimadoMinutos : Integer
-        - custoTabelado : Double
-        - dataCriacao : LocalDateTime
-        - dataAtualizacao : LocalDateTime
-        + Servico()
-        + Servico(codigo : Long, nome : String, tempoEstimadoMinutos : Integer, custoTabelado : Double, dataCriacao : LocalDateTime, dataAtualizacao : LocalDateTime)
-        + getCodigo() : Long
-        + setCodigo(codigo : Long) : void
-        + getNome() : String
-        + setNome(nome : String) : void
-        + getTempoEstimadoMinutos() : Integer
-        + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
-        + getCustoTabelado() : Double
-        + setCustoTabelado(custoTabelado : Double) : void
-        + getDataCriacao() : LocalDateTime
-        + setDataCriacao(dataCriacao : LocalDateTime) : void
-        + getDataAtualizacao() : LocalDateTime
-        + setDataAtualizacao(dataAtualizacao : LocalDateTime) : void
-    }
+skinparam class {
+    BackgroundColor #FAFAFA
+    ArrowColor #1E293B
+    BorderColor #334155
+    FontName Arial
+    FontSize 11
+    AttributeFontSize 10
 }
 
-package "br.com.mecaniQA.api.dto" {
-    class PecaRequestDTO {
-        - nome : String
-        - codigoBarras : String
-        - fornecedorMarca : String
-        - quantidadeEstoque : Integer
-        - precoCusto : Double
-        - precoVenda : Double
-        - categoria : CategoriaPeca
-        - tamanho : String
-        - cor : String
-        + PecaRequestDTO()
-        + PecaRequestDTO(nome : String, codigoBarras : String, fornecedorMarca : String, quantidadeEstoque : Integer, precoCusto : Double, precoVenda : Double, categoria : CategoriaPeca, tamanho : String, cor : String)
-        + getNome() : String
-        + setNome(nome : String) : void
-        + getCodigoBarras() : String
-        + setCodigoBarras(codigoBarras : String) : void
-        + getFornecedorMarca() : String
-        + setFornecedorMarca(fornecedorMarca : String) : void
-        + getQuantidadeEstoque() : Integer
-        + setQuantidadeEstoque(quantidadeEstoque : Integer) : void
-        + getPrecoCusto() : Double
-        + setPrecoCusto(precoCusto : Double) : void
-        + getPrecoVenda() : Double
-        + setPrecoVenda(precoVenda : Double) : void
-        + getCategoria() : CategoriaPeca
-        + setCategoria(categoria : CategoriaPeca) : void
-        + getTamanho() : String
-        + setTamanho(tamanho : String) : void
-        + getCor() : String
-        + setCor(cor : String) : void
-    }
+left to right direction
 
-    class ServicoRequestDTO {
-        - nome : String
-        - tempoEstimadoMinutos : Integer
-        - custoTabelado : Double
-        + ServicoRequestDTO()
-        + ServicoRequestDTO(nome : String, tempoEstimadoMinutos : Integer, custoTabelado : Double)
-        + getNome() : String
-        + setNome(nome : String) : void
-        + getTempoEstimadoMinutos() : Integer
-        + setTempoEstimadoMinutos(tempoEstimadoMinutos : Integer) : void
-        + getCustoTabelado() : Double
-        + setCustoTabelado(custoTabelado : Double) : void
-    }
+enum CategoriaPeca {
+    + MOTOR
+    + SUSPENSAO
+    + FREIOS
+    + ELETRICA
+    + ACESSORIOS
 }
 
-package "br.com.mecaniQA.api.repository" {
-    class PecaRepository {
-        - {static} INSTANCE : PecaRepository
-        - pecas : List<Peca>
-        - proximoCodigo : Long
-        - PecaRepository()
-        + {static} getInstance() : PecaRepository
-        + salvar(dto : PecaRequestDTO) : Peca
-        + listarTodos() : List<Peca>
-        + buscarPorCodigo(codigo : Long) : Optional<Peca>
-        + atualizar(codigo : Long, dto : PecaRequestDTO) : Optional<Peca>
-        + excluir(codigo : Long) : boolean
-    }
-
-    class ServicoRepository {
-        - {static} INSTANCE : ServicoRepository
-        - servicos : List<Servico>
-        - proximoCodigo : Long
-        - ServicoRepository()
-        + {static} getInstance() : ServicoRepository
-        + salvar(dto : ServicoRequestDTO) : Servico
-        + listarTodos() : List<Servico>
-        + buscarPorCodigo(codigo : Long) : Optional<Servico>
-        + atualizar(codigo : Long, dto : ServicoRequestDTO) : Optional<Servico>
-        + excluir(codigo : Long) : boolean
-    }
+class Peca {
+    - Long codigo
+    - String codigoBarras
+    - String fornecedorMarca
+    - Integer quantidadeEstoque
+    - Double precoCusto
+    - Double precoVenda
+    - LocalDateTime dataCadastro
+    - LocalDateTime dataAtualizacao
+    - String tamanho
+    - String cor
+    - CategoriaPeca categoria
+    --
+    + Peca()
+    + getCodigo() : Long
+    + setCodigo(Long) : void
+    + getCodigoBarras() : String
+    + setCodigoBarras(String) : void
+    + getFornecedorMarca() : String
+    + setFornecedorMarca(String) : void
+    + getQuantidadeEstoque() : Integer
+    + setQuantidadeEstoque(Integer) : void
+    + getPrecoCusto() : Double
+    + setPrecoCusto(Double) : void
+    + getPrecoVenda() : Double
+    + setPrecoVenda(Double) : void
+    + getDataCadastro() : LocalDateTime
+    + setDataCadastro(LocalDateTime) : void
+    + getDataAtualizacao() : LocalDateTime
+    + setDataAtualizacao(LocalDateTime) : void
+    + getTamanho() : String
+    + setTamanho(String) : void
+    + getCor() : String
+    + setCor(String) : void
+    + getCategoria() : CategoriaPeca
+    + setCategoria(CategoriaPeca) : void
 }
 
-package "br.com.mecaniQA.api.controller" {
-    class PecaController {
-        - pecaRepository : PecaRepository
-        + PecaController()
-        + cadastrar(dto : PecaRequestDTO) : ResponseEntity<Peca>
-        + listar() : ResponseEntity<List<Peca>>
-        + buscarPorCodigo(codigo : Long) : ResponseEntity<Peca>
-        + atualizar(codigo : Long, dto : PecaRequestDTO) : ResponseEntity<Peca>
-        + excluir(codigo : Long) : ResponseEntity<Void>
-    }
-
-    class ServicoController {
-        - servicoRepository : ServicoRepository
-        + ServicoController()
-        + cadastrar(dto : ServicoRequestDTO) : ResponseEntity<Servico>
-        + listar() : ResponseEntity<List<Servico>>
-        + buscarPorCodigo(codigo : Long) : ResponseEntity<Servico>
-        + atualizar(codigo : Long, dto : ServicoRequestDTO) : ResponseEntity<Servico>
-        + excluir(codigo : Long) : ResponseEntity<Void>
-    }
+class PecaRequestDTO {
+    - String codigoBarras
+    - String fornecedorMarca
+    - Integer quantidadeEstoque
+    - Double precoCusto
+    - Double precoVenda
+    - String tamanho
+    - String cor
+    - CategoriaPeca categoria
+    --
+    + PecaRequestDTO()
+    + getCodigoBarras() : String
+    + setCodigoBarras(String) : void
+    + getFornecedorMarca() : String
+    + setFornecedorMarca(String) : void
+    + getQuantidadeEstoque() : Integer
+    + setQuantidadeEstoque(Integer) : void
+    + getPrecoCusto() : Double
+    + setPrecoCusto(Double) : void
+    + getPrecoVenda() : Double
+    + setPrecoVenda(Double) : void
+    + getTamanho() : String
+    + setTamanho(String) : void
+    + getCor() : String
+    + setCor(String) : void
+    + getCategoria() : CategoriaPeca
+    + setCategoria(CategoriaPeca) : void
 }
 
-' Relacionamentos
-Peca --> "1" CategoriaPeca : categoria
-PecaRequestDTO --> "1" CategoriaPeca : categoria
+class PecaRepository <<Singleton>> {
+    - {static} PecaRepository INSTANCE
+    - List<Peca> pecas
+    - Long proximoCodigo
+    --
+    - PecaRepository()
+    + {static} synchronized getInstance() : PecaRepository
+    + salvar(PecaRequestDTO) : Peca
+    + listarTodos() : List<Peca>
+    + buscarPorCodigo(Long) : Optional<Peca>
+    + atualizar(Long, PecaRequestDTO) : Optional<Peca>
+    + excluir(Long) : boolean
+}
 
-PecaRepository o-- Peca : gerencia
-ServicoRepository o-- Servico : gerencia
+class PecaController {
+    - PecaRepository pecaRepository
+    --
+    + PecaController()
+    + cadastrar(PecaRequestDTO) : ResponseEntity<Peca>
+    + listar() : ResponseEntity<List<Peca>>
+    + buscarPorCodigo(Long) : ResponseEntity<Peca>
+    + atualizar(Long, PecaRequestDTO) : ResponseEntity<Peca>
+    + excluir(Long) : ResponseEntity<Void>
+}
 
-PecaController ..> PecaRepository : utiliza
+class Servico {
+    - Long codigo
+    - String nome
+    - Integer tempoEstimadoMinutos
+    - Double custoTabelado
+    - LocalDateTime dataCriacao
+    - LocalDateTime dataAtualizacao
+    --
+    + Servico()
+    + getCodigo() : Long
+    + setCodigo(Long) : void
+    + getNome() : String
+    + setNome(String) : void
+    + getTempoEstimadoMinutos() : Integer
+    + setTempoEstimadoMinutos(Integer) : void
+    + getCustoTabelado() : Double
+    + setCustoTabelado(Double) : void
+    + getDataCriacao() : LocalDateTime
+    + setDataCriacao(LocalDateTime) : void
+    + getDataAtualizacao() : LocalDateTime
+    + setDataAtualizacao(LocalDateTime) : void
+}
+
+class ServicoRequestDTO {
+    - String nome
+    - Integer tempoEstimadoMinutos
+    - Double custoTabelado
+    --
+    + ServicoRequestDTO()
+    + getNome() : String
+    + setNome(String) : void
+    + getTempoEstimadoMinutos() : Integer
+    + setTempoEstimadoMinutos(Integer) : void
+    + getCustoTabelado() : Double
+    + setCustoTabelado(Double) : void
+}
+
+class ServicoRepository <<Singleton>> {
+    - {static} ServicoRepository INSTANCE
+    - List<Servico> servicos
+    - Long proximoCodigo
+    --
+    - ServicoRepository()
+    + {static} synchronized getInstance() : ServicoRepository
+    + salvar(ServicoRequestDTO) : Servico
+    + listarTodos() : List<Servico>
+    + buscarPorCodigo(Long) : Optional<Servico>
+    + atualizar(Long, ServicoRequestDTO) : Optional<Servico>
+    + excluir(Long) : boolean
+}
+
+class ServicoController {
+    - ServicoRepository servicoRepository
+    --
+    + ServicoController()
+    + cadastrar(ServicoRequestDTO) : ResponseEntity<Servico>
+    + listar() : ResponseEntity<List<Servico>>
+    + buscarPorCodigo(Long) : ResponseEntity<Servico>
+    + atualizar(Long, ServicoRequestDTO) : ResponseEntity<Servico>
+    + excluir(Long) : ResponseEntity<Void>
+}
+
+PecaController ..> PecaRepository : getInstance()
 PecaController ..> PecaRequestDTO : recebe
-PecaController ..> Peca : retorna
+PecaRepository --> Peca : armazena
+Peca --> CategoriaPeca : possui
+PecaRequestDTO --> CategoriaPeca : possui
 
-ServicoController ..> ServicoRepository : utiliza
+ServicoController ..> ServicoRepository : getInstance()
 ServicoController ..> ServicoRequestDTO : recebe
-ServicoController ..> Servico : retorna
-
-PecaRepository ..> PecaRequestDTO : consome
-ServicoRepository ..> ServicoRequestDTO : consome
-
+ServicoRepository --> Servico : armazena
 @enduml

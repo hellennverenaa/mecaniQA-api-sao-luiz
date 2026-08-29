@@ -1,41 +1,35 @@
-# Diagrama de Classes UML - MecaniQA (OAT 1)
+# Diagrama de Classes UML — MecâniQA API (Equipe São Luiz)
 
-## Visão Geral da Arquitetura
+Diagrama estrutural da camada de domínio, objetos de transferência (DTOs), repositórios baseados no padrão **Singleton manual** em memória e controladores RESTful[cite: 3, 4].
 
-O diagrama abaixo representa a estrutura de classes oficial da API MecâniQA (Equipe São Luiz), modelada de acordo com as especificações da OAT 1 e as diretrizes do Barema Oficial.
-
-```mermaid
+\`\`\`mermaid
 classDiagram
-    direction TB
+    direction LR
 
     class CategoriaPeca {
         <<enumeration>>
-        +MOTOR
-        +SUSPENSAO
-        +FREIOS
-        +ELETRICA
-        +ACESSORIOS
+        MOTOR
+        SUSPENSAO
+        FREIOS
+        ELETRICA
+        ACESSORIOS
     }
 
     class Peca {
         -Long codigo
-        -String nome
         -String codigoBarras
         -String fornecedorMarca
         -Integer quantidadeEstoque
         -Double precoCusto
         -Double precoVenda
-        -CategoriaPeca categoria
-        -String tamanho
-        -String cor
         -LocalDateTime dataCadastro
         -LocalDateTime dataAtualizacao
+        -String tamanho
+        -String cor
+        -CategoriaPeca categoria
         +Peca()
-        +Peca(Long codigo, String nome, String codigoBarras, String fornecedorMarca, Integer quantidadeEstoque, Double precoCusto, Double precoVenda, CategoriaPeca categoria, String tamanho, String cor, LocalDateTime dataCadastro, LocalDateTime dataAtualizacao)
         +getCodigo() Long
         +setCodigo(Long codigo) void
-        +getNome() String
-        +setNome(String nome) void
         +getCodigoBarras() String
         +setCodigoBarras(String codigoBarras) void
         +getFornecedorMarca() String
@@ -46,16 +40,68 @@ classDiagram
         +setPrecoCusto(Double precoCusto) void
         +getPrecoVenda() Double
         +setPrecoVenda(Double precoVenda) void
-        +getCategoria() CategoriaPeca
-        +setCategoria(CategoriaPeca categoria) void
-        +getTamanho() String
-        +setTamanho(String tamanho) void
-        +getCor() String
-        +setCor(String cor) void
         +getDataCadastro() LocalDateTime
         +setDataCadastro(LocalDateTime dataCadastro) void
         +getDataAtualizacao() LocalDateTime
         +setDataAtualizacao(LocalDateTime dataAtualizacao) void
+        +getTamanho() String
+        +setTamanho(String tamanho) void
+        +getCor() String
+        +setCor(String cor) void
+        +getCategoria() CategoriaPeca
+        +setCategoria(CategoriaPeca categoria) void
+    }
+
+    class PecaRequestDTO {
+        -String codigoBarras
+        -String fornecedorMarca
+        -Integer quantidadeEstoque
+        -Double precoCusto
+        -Double precoVenda
+        -String tamanho
+        -String cor
+        -CategoriaPeca categoria
+        +PecaRequestDTO()
+        +getCodigoBarras() String
+        +setCodigoBarras(String codigoBarras) void
+        +getFornecedorMarca() String
+        +setFornecedorMarca(String fornecedorMarca) void
+        +getQuantidadeEstoque() Integer
+        +setQuantidadeEstoque(Integer quantidadeEstoque) void
+        +getPrecoCusto() Double
+        +setPrecoCusto(Double precoCusto) void
+        +getPrecoVenda() Double
+        +setPrecoVenda(Double precoVenda) void
+        +getTamanho() String
+        +setTamanho(String tamanho) void
+        +getCor() String
+        +setCor(String cor) void
+        +getCategoria() CategoriaPeca
+        +setCategoria(CategoriaPeca categoria) void
+    }
+
+    class PecaRepository {
+        <<Singleton>>
+        -PecaRepository INSTANCE$
+        -List~Peca~ pecas
+        -Long proximoCodigo
+        -PecaRepository()
+        +getInstance()$ PecaRepository
+        +salvar(PecaRequestDTO dto) Peca
+        +listarTodos() List~Peca~
+        +buscarPorCodigo(Long codigo) Optional~Peca~
+        +atualizar(Long codigo, PecaRequestDTO dto) Optional~Peca~
+        +excluir(Long codigo) boolean
+    }
+
+    class PecaController {
+        -PecaRepository pecaRepository
+        +PecaController()
+        +cadastrar(PecaRequestDTO dto) ResponseEntity~Peca~
+        +listar() ResponseEntity~List~
+        +buscarPorCodigo(Long codigo) ResponseEntity~Peca~
+        +atualizar(Long codigo, PecaRequestDTO dto) ResponseEntity~Peca~
+        +excluir(Long codigo) ResponseEntity~Void~
     }
 
     class Servico {
@@ -66,7 +112,6 @@ classDiagram
         -LocalDateTime dataCriacao
         -LocalDateTime dataAtualizacao
         +Servico()
-        +Servico(Long codigo, String nome, Integer tempoEstimadoMinutos, Double custoTabelado, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao)
         +getCodigo() Long
         +setCodigo(Long codigo) void
         +getNome() String
@@ -81,44 +126,11 @@ classDiagram
         +setDataAtualizacao(LocalDateTime dataAtualizacao) void
     }
 
-    class PecaRequestDTO {
-        -String nome
-        -String codigoBarras
-        -String fornecedorMarca
-        -Integer quantidadeEstoque
-        -Double precoCusto
-        -Double precoVenda
-        -CategoriaPeca categoria
-        -String tamanho
-        -String cor
-        +PecaRequestDTO()
-        +PecaRequestDTO(String nome, String codigoBarras, String fornecedorMarca, Integer quantidadeEstoque, Double precoCusto, Double precoVenda, CategoriaPeca categoria, String tamanho, String cor)
-        +getNome() String
-        +setNome(String nome) void
-        +getCodigoBarras() String
-        +setCodigoBarras(String codigoBarras) void
-        +getFornecedorMarca() String
-        +setFornecedorMarca(String fornecedorMarca) void
-        +getQuantidadeEstoque() Integer
-        +setQuantidadeEstoque(Integer quantidadeEstoque) void
-        +getPrecoCusto() Double
-        +setPrecoCusto(Double precoCusto) void
-        +getPrecoVenda() Double
-        +setPrecoVenda(Double precoVenda) void
-        +getCategoria() CategoriaPeca
-        +setCategoria(CategoriaPeca categoria) void
-        +getTamanho() String
-        +setTamanho(String tamanho) void
-        +getCor() String
-        +setCor(String cor) void
-    }
-
     class ServicoRequestDTO {
         -String nome
         -Integer tempoEstimadoMinutos
         -Double custoTabelado
         +ServicoRequestDTO()
-        +ServicoRequestDTO(String nome, Integer tempoEstimadoMinutos, Double custoTabelado)
         +getNome() String
         +setNome(String nome) void
         +getTempoEstimadoMinutos() Integer
@@ -127,20 +139,8 @@ classDiagram
         +setCustoTabelado(Double custoTabelado) void
     }
 
-    class PecaRepository {
-        -PecaRepository INSTANCE$
-        -List~Peca~ pecas
-        -Long proximoCodigo
-        -PecaRepository()
-        +getInstance()$ PecaRepository
-        +salvar(PecaRequestDTO dto) Peca
-        +listarTodos() List~Peca~
-        +buscarPorCodigo(Long codigo) Optional~Peca~
-        +atualizar(Long codigo, PecaRequestDTO dto) Optional~Peca~
-        +excluir(Long codigo) boolean
-    }
-
     class ServicoRepository {
+        <<Singleton>>
         -ServicoRepository INSTANCE$
         -List~Servico~ servicos
         -Long proximoCodigo
@@ -153,41 +153,25 @@ classDiagram
         +excluir(Long codigo) boolean
     }
 
-    class PecaController {
-        -PecaRepository pecaRepository
-        +PecaController()
-        +cadastrar(PecaRequestDTO dto) ResponseEntity~Peca~
-        +listar() ResponseEntity~List~Peca~~
-        +buscarPorCodigo(Long codigo) ResponseEntity~Peca~
-        +atualizar(Long codigo, PecaRequestDTO dto) ResponseEntity~Peca~
-        +excluir(Long codigo) ResponseEntity~Void~
-    }
-
     class ServicoController {
         -ServicoRepository servicoRepository
         +ServicoController()
         +cadastrar(ServicoRequestDTO dto) ResponseEntity~Servico~
-        +listar() ResponseEntity~List~Servico~~
+        +listar() ResponseEntity~List~
         +buscarPorCodigo(Long codigo) ResponseEntity~Servico~
         +atualizar(Long codigo, ServicoRequestDTO dto) ResponseEntity~Servico~
         +excluir(Long codigo) ResponseEntity~Void~
     }
 
-    %% Relacionamentos
-    Peca --> "1" CategoriaPeca : categoria
-    PecaRequestDTO --> "1" CategoriaPeca : categoria
-
-    PecaRepository o-- Peca : gerencia
-    ServicoRepository o-- Servico : gerencia
-
-    PecaController ..> PecaRepository : utiliza
+    %% Relacionamentos Peças
+    PecaController ..> PecaRepository : getInstance()
     PecaController ..> PecaRequestDTO : recebe
-    PecaController ..> Peca : retorna
+    PecaRepository --> Peca : armazena
+    Peca --> CategoriaPeca : possui
+    PecaRequestDTO --> CategoriaPeca : possui
 
-    ServicoController ..> ServicoRepository : utiliza
+    %% Relacionamentos Serviços
+    ServicoController ..> ServicoRepository : getInstance()
     ServicoController ..> ServicoRequestDTO : recebe
-    ServicoController ..> Servico : retorna
-
-    PecaRepository ..> PecaRequestDTO : consome
-    ServicoRepository ..> ServicoRequestDTO : consome
-```
+    ServicoRepository --> Servico : armazena
+\`\`\`
