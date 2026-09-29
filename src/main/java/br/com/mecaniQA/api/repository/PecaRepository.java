@@ -1,6 +1,7 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.dto.PecaRequestDTO;
+import br.com.mecaniQA.api.mapper.PecaMapper;
 import br.com.mecaniQA.api.model.Peca;
 
 import java.time.LocalDateTime;
@@ -28,20 +29,7 @@ public class PecaRepository {
 
     public synchronized Peca salvar(PecaRequestDTO dto) {
         LocalDateTime agora = LocalDateTime.now();
-        Peca peca = new Peca(
-                proximoCodigo++,
-                dto.getNome(),
-                dto.getCodigoBarras(),
-                dto.getFornecedorMarca(),
-                dto.getQuantidadeEstoque(),
-                dto.getPrecoCusto(),
-                dto.getPrecoVenda(),
-                dto.getCategoria(),
-                dto.getTamanho(),
-                dto.getCor(),
-                agora,
-                agora
-        );
+        Peca peca = PecaMapper.toModel(proximoCodigo++, dto, agora);
 
         pecas.add(peca);
         return peca;
