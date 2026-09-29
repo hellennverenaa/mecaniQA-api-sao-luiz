@@ -1,0 +1,146 @@
+@startuml diagrama-classes
+
+title MecaniQA — Diagrama de Classes da OAT 2
+
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 35
+top to bottom direction
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #35556B
+  ArrowColor #58788E
+  FontColor #243B4A
+}
+
+package "Domínio" as Dominio #EAF3F8 {
+  class Peca <<OAT 1>> {
+    - codigo : Long
+    - nome : String
+  }
+
+  class OrdemServico <<OAT 2>> {
+    - codigo : Long
+    - status : StatusOrdemServico
+    + {static} builder() : Builder
+  }
+
+  class "OrdemServico.Builder" as Builder <<Builder>> {
+    - codigo : Long
+    - status : StatusOrdemServico
+    + codigo(codigo) : Builder
+    + status(status) : Builder
+    + build() : OrdemServico
+  }
+
+  enum StatusOrdemServico {
+    ABERTO
+    PENDENTE_DE_PAGAMENTO
+    PAGO
+    EM_EXECUCAO
+    EXECUTADO
+  }
+
+  class PedidoPecas <<OAT 2>> {
+    - codigo : Long
+    - status : StatusPedidoPecas
+    - itens : List<ItemPedidoPeca>
+  }
+
+  class ItemPedidoPeca <<Associativa>> {
+    - peca : Peca
+    - quantidade : Integer
+  }
+
+  enum StatusPedidoPecas {
+    ORCANDO
+    PENDENTE_DE_PAGAMENTO
+    PAGO_FATURADO
+    ENTREGUE
+  }
+}
+
+package "DTOs da Ordem de Serviço" as DTOOS #FFF4E6 {
+  class OrdemServicoRequestDTO {
+    - status : StatusOrdemServico
+  }
+
+  class AtualizarStatusOrdemServicoDTO {
+    - status : StatusOrdemServico
+  }
+
+  class OrdemServicoResponseDTO {
+    - codigo : Long
+    - status : StatusOrdemServico
+  }
+
+  OrdemServicoRequestDTO -[hidden]down-> AtualizarStatusOrdemServicoDTO
+  AtualizarStatusOrdemServicoDTO -[hidden]down-> OrdemServicoResponseDTO
+}
+
+package "DTOs do Pedido" as DTOPedido #FFF4E6 {
+  class PedidoPecasRequestDTO {
+    - status : StatusPedidoPecas
+  }
+
+  class AdicionarItemPedidoPecaDTO {
+    - codigoPeca : Long
+    - quantidade : Integer
+  }
+
+  class PedidoPecasResponseDTO {
+    - codigo : Long
+    - status : StatusPedidoPecas
+    - itens : List<ItemPedidoPecaResponseDTO>
+  }
+
+  class ItemPedidoPecaResponseDTO {
+    - codigoPeca : Long
+    - quantidade : Integer
+  }
+
+  class AtualizarStatusPedidoPecasDTO {
+    - status : StatusPedidoPecas
+  }
+
+  PedidoPecasRequestDTO -[hidden]down-> AdicionarItemPedidoPecaDTO
+  AdicionarItemPedidoPecaDTO -[hidden]down-> AtualizarStatusPedidoPecasDTO
+  AtualizarStatusPedidoPecasDTO -[hidden]down-> PedidoPecasResponseDTO
+  PedidoPecasResponseDTO -[hidden]down-> ItemPedidoPecaResponseDTO
+}
+
+package "Mapeamento" as Mapeamento #F3ECF7 {
+  class OrdemServicoMapper <<Mapper>> {
+    + {static} toModel(codigo, dto) : OrdemServico
+    + {static} toResponse(ordem) : OrdemServicoResponseDTO
+  }
+
+  class PedidoPecasMapper <<Mapper>> {
+    + {static} toModel(codigo, dto) : PedidoPecas
+    + {static} toResponse(pedido) : PedidoPecasResponseDTO
+  }
+}
+
+OrdemServico --> StatusOrdemServico : status
+OrdemServico +-- Builder : classe interna
+Builder ..> OrdemServico : cria
+PedidoPecas --> StatusPedidoPecas : status
+PedidoPecas "1" *-- "0..*" ItemPedidoPeca : itens
+ItemPedidoPeca "0..*" --> "1" Peca : peça
+
+OrdemServicoMapper .up.> DTOOS : converte
+PedidoPecasMapper .up.> DTOPedido : converte
+
+PedidoPecasResponseDTO "1" *-- "0..*" ItemPedidoPecaResponseDTO : itens
+
+' Organização visual em quatro blocos
+Dominio -[hidden]right-> DTOOS
+Dominio -[hidden]down-> DTOPedido
+DTOOS -[hidden]down-> Mapeamento
+DTOPedido -[hidden]right-> Mapeamento
+
+@enduml

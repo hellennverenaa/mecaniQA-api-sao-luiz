@@ -1,0 +1,39 @@
+@startuml diagrama-atividade
+
+title US04 — Adicionar peça ao Pedido
+
+skinparam backgroundColor #FAFAFA
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #E8F1FB
+  BorderColor #24527A
+  FontColor #17324D
+  DiamondBackgroundColor #FFF4CC
+  DiamondBorderColor #9A6B00
+  StartColor #24527A
+  EndColor #24527A
+}
+
+start
+
+:Receber código do pedido e DTO;
+
+if (Dados válidos?) then (não)
+  #FDECEC:**400 Bad Request**;
+  stop
+else (sim)
+  :Adicionar peça ao pedido;
+
+  if (Pedido e peça existem?) then (não)
+    #FDECEC:**404 Not Found**;
+    stop
+  else (sim)
+    :Converter resposta para DTO;
+    #E7F6EC:**200 OK**;
+    stop
+  endif
+endif
+
+caption POST /api/pedidos-pecas/{codigo}/itens
+
+@enduml
