@@ -1,6 +1,7 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.dto.ServicoRequestDTO;
+import br.com.mecaniQA.api.mapper.ServicoMapper;
 import br.com.mecaniQA.api.model.Servico;
 
 import java.time.LocalDateTime;
@@ -28,14 +29,7 @@ public class ServicoRepository {
 
     public synchronized Servico salvar(ServicoRequestDTO dto) {
         LocalDateTime agora = LocalDateTime.now();
-        Servico servico = new Servico(
-                proximoCodigo++,
-                dto.getNome(),
-                dto.getTempoEstimadoMinutos(),
-                dto.getCustoTabelado(),
-                agora,
-                agora
-        );
+        Servico servico = ServicoMapper.toModel(proximoCodigo++, dto, agora);
 
         servicos.add(servico);
         return servico;
