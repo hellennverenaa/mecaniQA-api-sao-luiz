@@ -1,6 +1,8 @@
 package br.com.mecaniQA.api.controller;
 
 import br.com.mecaniQA.api.dto.PecaRequestDTO;
+import br.com.mecaniQA.api.dto.PecaResponseDTO;
+import br.com.mecaniQA.api.mapper.PecaMapper;
 import br.com.mecaniQA.api.model.Peca;
 import br.com.mecaniQA.api.repository.PecaRepository;
 import org.springframework.http.HttpStatus;
@@ -27,27 +29,31 @@ public class PecaController {
     }
 
     @PostMapping
-    public ResponseEntity<Peca> cadastrar(@RequestBody PecaRequestDTO dto) {
+    public ResponseEntity<PecaResponseDTO> cadastrar(@RequestBody PecaRequestDTO dto) {
         Peca peca = pecaRepository.salvar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(peca);
+        return ResponseEntity.status(HttpStatus.CREATED).body(PecaMapper.toResponse(peca));
     }
 
     @GetMapping
-    public ResponseEntity<List<Peca>> listar() {
-        return ResponseEntity.ok(pecaRepository.listarTodos());
+    public ResponseEntity<List<PecaResponseDTO>> listar() {
+        return ResponseEntity.ok(pecaRepository.listarTodos().stream()
+                .map(PecaMapper::toResponse)
+                .toList());
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<Peca> buscarPorCodigo(@PathVariable("codigo") Long codigo) {
+    public ResponseEntity<PecaResponseDTO> buscarPorCodigo(@PathVariable("codigo") Long codigo) {
         return pecaRepository.buscarPorCodigo(codigo)
+                .map(PecaMapper::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<Peca> atualizar(@PathVariable("codigo") Long codigo,
-                                          @RequestBody PecaRequestDTO dto) {
+    public ResponseEntity<PecaResponseDTO> atualizar(@PathVariable("codigo") Long codigo,
+                                                     @RequestBody PecaRequestDTO dto) {
         return pecaRepository.atualizar(codigo, dto)
+                .map(PecaMapper::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
