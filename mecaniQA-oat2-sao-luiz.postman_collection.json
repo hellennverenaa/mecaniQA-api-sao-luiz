@@ -1,0 +1,178 @@
+{
+  "info": {
+    "_postman_id": "9ca5be2e-b68a-4e11-b143-10c88d09bdd5",
+    "name": "mecaniQA OAT 2 - São Luiz",
+    "description": "Testes dos endpoints da OAT 2. Execute a coleção na ordem para reutilizar os códigos criados em memória.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "pecaId", "value": "1" },
+    { "key": "ordemServicoId", "value": "1" },
+    { "key": "pedidoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Preparação - Criar peça",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 201 Created\", () => pm.response.to.have.status(201));",
+          "pm.collectionVariables.set(\"pecaId\", pm.response.json().codigo);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Filtro de óleo\",\n  \"codigoBarras\": \"7891234567890\",\n  \"fornecedorMarca\": \"Marca Teste\",\n  \"quantidadeEstoque\": 10,\n  \"precoCusto\": 25.0,\n  \"precoVenda\": 40.0,\n  \"categoria\": \"MOTOR\",\n  \"tamanho\": null,\n  \"cor\": null\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pecas"
+      }
+    },
+    {
+      "name": "US01 - Criar Ordem de Serviço",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 201 Created\", () => pm.response.to.have.status(201));",
+          "const resposta = pm.response.json();",
+          "pm.expect(resposta.status).to.eql(\"ABERTO\");",
+          "pm.collectionVariables.set(\"ordemServicoId\", resposta.codigo);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"ABERTO\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/ordens-servico"
+      }
+    },
+    {
+      "name": "US02 - Alterar status da Ordem de Serviço",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 200 OK\", () => pm.response.to.have.status(200));",
+          "pm.expect(pm.response.json().status).to.eql(\"EM_EXECUCAO\");"
+        ] }
+      }],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"EM_EXECUCAO\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/ordens-servico/{{ordemServicoId}}/status"
+      }
+    },
+    {
+      "name": "US02 - Ordem de Serviço inexistente",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 404 Not Found\", () => pm.response.to.have.status(404));"
+        ] }
+      }],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"PAGO\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/ordens-servico/999999/status"
+      }
+    },
+    {
+      "name": "US03 - Criar Pedido de Peças",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 201 Created\", () => pm.response.to.have.status(201));",
+          "const resposta = pm.response.json();",
+          "pm.expect(resposta.status).to.eql(\"ORCANDO\");",
+          "pm.collectionVariables.set(\"pedidoId\", resposta.codigo);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"ORCANDO\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas"
+      }
+    },
+    {
+      "name": "US04 - Adicionar peça ao Pedido",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 200 OK\", () => pm.response.to.have.status(200));",
+          "const itens = pm.response.json().itens;",
+          "pm.expect(itens[itens.length - 1].quantidade).to.eql(2);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoPeca\": {{pecaId}},\n  \"quantidade\": 2\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas/{{pedidoId}}/itens"
+      }
+    },
+    {
+      "name": "US04 - Adicionar a mesma peça novamente",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 200 OK\", () => pm.response.to.have.status(200));",
+          "pm.expect(pm.response.json().itens.length).to.eql(2);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoPeca\": {{pecaId}},\n  \"quantidade\": 3\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas/{{pedidoId}}/itens"
+      }
+    },
+    {
+      "name": "US04 - Rejeitar quantidade inválida",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 400 Bad Request\", () => pm.response.to.have.status(400));"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoPeca\": {{pecaId}},\n  \"quantidade\": 0\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas/{{pedidoId}}/itens"
+      }
+    },
+    {
+      "name": "US05 - Alterar status do Pedido",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 200 OK\", () => pm.response.to.have.status(200));",
+          "pm.expect(pm.response.json().status).to.eql(\"PAGO_FATURADO\");"
+        ] }
+      }],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"PAGO_FATURADO\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas/{{pedidoId}}/status"
+      }
+    },
+    {
+      "name": "US05 - Pedido inexistente",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test(\"Retorna 404 Not Found\", () => pm.response.to.have.status(404));"
+        ] }
+      }],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"ENTREGUE\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/pedidos-pecas/999999/status"
+      }
+    }
+  ]
+}
