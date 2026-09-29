@@ -1,60 +1,43 @@
 @startuml diagrama-classes
 
-title MecaniQA API — Diagrama de Classes Final (OAT 2)
-caption Classes da OAT 1 preservadas e estrutura adicionada na OAT 2
+title MecaniQA — Diagrama de Classes da OAT 2
 
-skinparam backgroundColor #FAFAFA
+skinparam backgroundColor #FFFFFF
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam linetype ortho
 skinparam packageStyle rectangle
-skinparam nodesep 35
-skinparam ranksep 45
+skinparam nodesep 30
+skinparam ranksep 35
+top to bottom direction
 skinparam class {
   BackgroundColor #FFFFFF
-  BorderColor #2F4858
-  ArrowColor #526D82
-  FontColor #19323C
-}
-skinparam package {
-  BorderColor #526D82
-  FontColor #19323C
+  BorderColor #35556B
+  ArrowColor #58788E
+  FontColor #243B4A
 }
 
-package "model" #EAF2F8 {
-  enum CategoriaPeca <<OAT 1>> {
-    MOTOR
-    SUSPENSAO
-    FREIOS
-    ELETRICA
-    ACESSORIOS
-  }
-
+package "Domínio" as Dominio #EAF3F8 {
   class Peca <<OAT 1>> {
     - codigo : Long
     - nome : String
-    - codigoBarras : String
-    - fornecedorMarca : String
-    - quantidadeEstoque : Integer
-    - precoCusto : Double
-    - precoVenda : Double
-    - categoria : CategoriaPeca
-    - tamanho : String
-    - cor : String
-    - dataCadastro : LocalDateTime
-    - dataAtualizacao : LocalDateTime
   }
 
-  class Servico <<OAT 1>> {
+  class OrdemServico <<OAT 2>> {
     - codigo : Long
-    - nome : String
-    - tempoEstimadoMinutos : Integer
-    - custoTabelado : Double
-    - dataCriacao : LocalDateTime
-    - dataAtualizacao : LocalDateTime
+    - status : StatusOrdemServico
+    + {static} builder() : Builder
   }
 
-  enum StatusOrdemServico <<OAT 2>> {
+  class "OrdemServico.Builder" as Builder <<Builder>> {
+    - codigo : Long
+    - status : StatusOrdemServico
+    + codigo(codigo) : Builder
+    + status(status) : Builder
+    + build() : OrdemServico
+  }
+
+  enum StatusOrdemServico {
     ABERTO
     PENDENTE_DE_PAGAMENTO
     PAGO
@@ -62,258 +45,102 @@ package "model" #EAF2F8 {
     EXECUTADO
   }
 
-  enum StatusPedidoPecas <<OAT 2>> {
+  class PedidoPecas <<OAT 2>> {
+    - codigo : Long
+    - status : StatusPedidoPecas
+    - itens : List<ItemPedidoPeca>
+  }
+
+  class ItemPedidoPeca <<Associativa>> {
+    - peca : Peca
+    - quantidade : Integer
+  }
+
+  enum StatusPedidoPecas {
     ORCANDO
     PENDENTE_DE_PAGAMENTO
     PAGO_FATURADO
     ENTREGUE
   }
-
-  class OrdemServico <<OAT 2>> {
-    - codigo : Long
-    - status : StatusOrdemServico
-    - OrdemServico(builder : Builder)
-    + {static} builder() : Builder
-    + getCodigo() : Long
-    + setCodigo(codigo : Long) : void
-    + getStatus() : StatusOrdemServico
-    + setStatus(status : StatusOrdemServico) : void
-  }
-
-  class "OrdemServico.Builder" as OrdemServicoBuilder <<Builder>> {
-    - codigo : Long
-    - status : StatusOrdemServico
-    + codigo(codigo : Long) : Builder
-    + status(status : StatusOrdemServico) : Builder
-    + build() : OrdemServico
-  }
-
-  class PedidoPecas <<OAT 2>> {
-    - codigo : Long
-    - status : StatusPedidoPecas
-    - itens : List<ItemPedidoPeca>
-    + PedidoPecas()
-    + PedidoPecas(codigo, status, itens)
-  }
-
-  class ItemPedidoPeca <<Entidade associativa>> {
-    - peca : Peca
-    - quantidade : Integer
-    + ItemPedidoPeca()
-    + ItemPedidoPeca(peca, quantidade)
-  }
 }
 
-package "dto" #FDF2E9 {
-  class PecaRequestDTO <<OAT 1>> {
-    - nome : String
-    - codigoBarras : String
-    - fornecedorMarca : String
-    - quantidadeEstoque : Integer
-    - precoCusto : Double
-    - precoVenda : Double
-    - categoria : CategoriaPeca
-    - tamanho : String
-    - cor : String
-  }
-
-  class ServicoRequestDTO <<OAT 1>> {
-    - nome : String
-    - tempoEstimadoMinutos : Integer
-    - custoTabelado : Double
-  }
-
-  class OrdemServicoRequestDTO <<OAT 2>> {
+package "DTOs da Ordem de Serviço" as DTOOS #FFF4E6 {
+  class OrdemServicoRequestDTO {
     - status : StatusOrdemServico
   }
 
-  class OrdemServicoResponseDTO <<OAT 2>> {
+  class AtualizarStatusOrdemServicoDTO {
+    - status : StatusOrdemServico
+  }
+
+  class OrdemServicoResponseDTO {
     - codigo : Long
     - status : StatusOrdemServico
   }
 
-  class AtualizarStatusOrdemServicoDTO <<OAT 2>> {
-    - status : StatusOrdemServico
-  }
+  OrdemServicoRequestDTO -[hidden]down-> AtualizarStatusOrdemServicoDTO
+  AtualizarStatusOrdemServicoDTO -[hidden]down-> OrdemServicoResponseDTO
+}
 
-  class PedidoPecasRequestDTO <<OAT 2>> {
+package "DTOs do Pedido" as DTOPedido #FFF4E6 {
+  class PedidoPecasRequestDTO {
     - status : StatusPedidoPecas
   }
 
-  class PedidoPecasResponseDTO <<OAT 2>> {
+  class AdicionarItemPedidoPecaDTO {
+    - codigoPeca : Long
+    - quantidade : Integer
+  }
+
+  class PedidoPecasResponseDTO {
     - codigo : Long
     - status : StatusPedidoPecas
     - itens : List<ItemPedidoPecaResponseDTO>
   }
 
-  class ItemPedidoPecaResponseDTO <<OAT 2>> {
+  class ItemPedidoPecaResponseDTO {
     - codigoPeca : Long
     - quantidade : Integer
   }
 
-  class AdicionarItemPedidoPecaDTO <<OAT 2>> {
-    - codigoPeca : Long
-    - quantidade : Integer
-  }
-
-  class AtualizarStatusPedidoPecasDTO <<OAT 2>> {
+  class AtualizarStatusPedidoPecasDTO {
     - status : StatusPedidoPecas
   }
+
+  PedidoPecasRequestDTO -[hidden]down-> AdicionarItemPedidoPecaDTO
+  AdicionarItemPedidoPecaDTO -[hidden]down-> AtualizarStatusPedidoPecasDTO
+  AtualizarStatusPedidoPecasDTO -[hidden]down-> PedidoPecasResponseDTO
+  PedidoPecasResponseDTO -[hidden]down-> ItemPedidoPecaResponseDTO
 }
 
-package "mapper" #F4ECF7 {
+package "Mapeamento" as Mapeamento #F3ECF7 {
   class OrdemServicoMapper <<Mapper>> {
-    - OrdemServicoMapper()
     + {static} toModel(codigo, dto) : OrdemServico
-    + {static} toResponse(ordemServico) : OrdemServicoResponseDTO
+    + {static} toResponse(ordem) : OrdemServicoResponseDTO
   }
 
   class PedidoPecasMapper <<Mapper>> {
-    - PedidoPecasMapper()
     + {static} toModel(codigo, dto) : PedidoPecas
     + {static} toResponse(pedido) : PedidoPecasResponseDTO
-    - {static} toItemResponse(item) : ItemPedidoPecaResponseDTO
   }
 }
 
-package "repository" #E8F8F5 {
-  class PecaRepository <<Singleton, OAT 1>> {
-    - {static} INSTANCE : PecaRepository
-    - pecas : List<Peca>
-    - proximoCodigo : Long
-    - PecaRepository()
-    + {static} getInstance() : PecaRepository
-    + salvar(dto) : Peca
-    + listarTodos() : List<Peca>
-    + buscarPorCodigo(codigo) : Optional<Peca>
-    + atualizar(codigo, dto) : Optional<Peca>
-    + excluir(codigo) : boolean
-  }
-
-  class ServicoRepository <<Singleton, OAT 1>> {
-    - {static} INSTANCE : ServicoRepository
-    - servicos : List<Servico>
-    - proximoCodigo : Long
-    - ServicoRepository()
-    + {static} getInstance() : ServicoRepository
-    + salvar(dto) : Servico
-    + listarTodos() : List<Servico>
-    + buscarPorCodigo(codigo) : Optional<Servico>
-    + atualizar(codigo, dto) : Optional<Servico>
-    + excluir(codigo) : boolean
-  }
-
-  class OrdemServicoRepository <<Singleton, OAT 2>> {
-    - {static} INSTANCE : OrdemServicoRepository
-    - ordens : List<OrdemServico>
-    - proximoCodigo : Long
-    - OrdemServicoRepository()
-    + {static} getInstance() : OrdemServicoRepository
-    + salvar(dto) : OrdemServico
-    + buscarPorCodigo(codigo) : Optional<OrdemServico>
-    + atualizarStatus(codigo, status) : Optional<OrdemServico>
-  }
-
-  class PedidoPecasRepository <<Singleton, OAT 2>> {
-    - {static} INSTANCE : PedidoPecasRepository
-    - pedidos : List<PedidoPecas>
-    - pecaRepository : PecaRepository
-    - proximoCodigo : Long
-    - PedidoPecasRepository()
-    + {static} getInstance() : PedidoPecasRepository
-    + salvar(dto) : PedidoPecas
-    + buscarPorCodigo(codigo) : Optional<PedidoPecas>
-    + adicionarItem(codigo, dto) : Optional<PedidoPecas>
-    + atualizarStatus(codigo, status) : Optional<PedidoPecas>
-  }
-}
-
-package "controller" #FEF9E7 {
-  class PecaController <<OAT 1>>
-  class ServicoController <<OAT 1>>
-
-  class OrdemServicoController <<OAT 2>> {
-    - ordemServicoRepository : OrdemServicoRepository
-    + OrdemServicoController()
-    + criar(dto) : ResponseEntity<OrdemServicoResponseDTO>
-    + atualizarStatus(codigo, dto) : ResponseEntity<OrdemServicoResponseDTO>
-  }
-
-  class PedidoPecasController <<OAT 2>> {
-    - pedidoPecasRepository : PedidoPecasRepository
-    + PedidoPecasController()
-    + criar(dto) : ResponseEntity<PedidoPecasResponseDTO>
-    + adicionarItem(codigo, dto) : ResponseEntity<PedidoPecasResponseDTO>
-    + atualizarStatus(codigo, dto) : ResponseEntity<PedidoPecasResponseDTO>
-  }
-}
-
-' Modelo e Builder
-Peca --> CategoriaPeca : categoria
 OrdemServico --> StatusOrdemServico : status
+OrdemServico +-- Builder : classe interna
+Builder ..> OrdemServico : cria
 PedidoPecas --> StatusPedidoPecas : status
 PedidoPecas "1" *-- "0..*" ItemPedidoPeca : itens
 ItemPedidoPeca "0..*" --> "1" Peca : peça
-OrdemServico +-- OrdemServicoBuilder : classe interna
-OrdemServicoBuilder ..> OrdemServico : build()
-OrdemServicoBuilder --> StatusOrdemServico : configura
 
-' DTOs
-PecaRequestDTO --> CategoriaPeca
-OrdemServicoRequestDTO --> StatusOrdemServico
-OrdemServicoResponseDTO --> StatusOrdemServico
-AtualizarStatusOrdemServicoDTO --> StatusOrdemServico
-PedidoPecasRequestDTO --> StatusPedidoPecas
-PedidoPecasResponseDTO --> StatusPedidoPecas
+OrdemServicoMapper .up.> DTOOS : converte
+PedidoPecasMapper .up.> DTOPedido : converte
+
 PedidoPecasResponseDTO "1" *-- "0..*" ItemPedidoPecaResponseDTO : itens
-AtualizarStatusPedidoPecasDTO --> StatusPedidoPecas
 
-' Mappers
-OrdemServicoMapper ..> OrdemServicoRequestDTO : recebe
-OrdemServicoMapper ..> OrdemServicoResponseDTO : produz
-OrdemServicoMapper ..> OrdemServico : converte
-PedidoPecasMapper ..> PedidoPecasRequestDTO : recebe
-PedidoPecasMapper ..> PedidoPecasResponseDTO : produz
-PedidoPecasMapper ..> ItemPedidoPecaResponseDTO : produz
-PedidoPecasMapper ..> PedidoPecas : converte
-PedidoPecasMapper ..> ItemPedidoPeca : converte
-
-' Repositories
-PecaRepository o-- Peca : mantém em memória
-ServicoRepository o-- Servico : mantém em memória
-OrdemServicoRepository o-- OrdemServico : mantém em memória
-PedidoPecasRepository o-- PedidoPecas : mantém em memória
-PedidoPecasRepository ..> PecaRepository : localiza peça
-OrdemServicoRepository ..> OrdemServicoMapper : usa
-PedidoPecasRepository ..> PedidoPecasMapper : usa
-
-' Controllers OAT 2: recebem e retornam DTOs
-OrdemServicoController ..> OrdemServicoRepository : usa
-OrdemServicoController ..> OrdemServicoMapper : usa
-OrdemServicoController ..> OrdemServicoRequestDTO : recebe
-OrdemServicoController ..> AtualizarStatusOrdemServicoDTO : recebe
-OrdemServicoController ..> OrdemServicoResponseDTO : retorna
-
-PedidoPecasController ..> PedidoPecasRepository : usa
-PedidoPecasController ..> PedidoPecasMapper : usa
-PedidoPecasController ..> PedidoPecasRequestDTO : recebe
-PedidoPecasController ..> AdicionarItemPedidoPecaDTO : recebe
-PedidoPecasController ..> AtualizarStatusPedidoPecasDTO : recebe
-PedidoPecasController ..> PedidoPecasResponseDTO : retorna
-
-' Partes preservadas da OAT 1
-PecaController ..> PecaRepository : usa
-PecaController ..> PecaRequestDTO : recebe
-ServicoController ..> ServicoRepository : usa
-ServicoController ..> ServicoRequestDTO : recebe
-
-legend bottom
-  |= Cor |= Camada |
-  |<#EAF2F8> | model |
-  |<#FDF2E9> | dto |
-  |<#F4ECF7> | mapper |
-  |<#E8F8F5> | repository |
-  |<#FEF9E7> | controller |
-endlegend
+' Organização visual em quatro blocos
+Dominio -[hidden]right-> DTOOS
+Dominio -[hidden]down-> DTOPedido
+DTOOS -[hidden]down-> Mapeamento
+DTOPedido -[hidden]right-> Mapeamento
 
 @enduml
