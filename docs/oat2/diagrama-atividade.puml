@@ -1,0 +1,45 @@
+@startuml diagrama-atividade
+
+title US04 — Adicionar peça ao Pedido
+caption POST /api/pedidos-pecas/{codigo}/itens — visão lógica do Controller
+
+skinparam backgroundColor #FAFAFA
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #E8F1FB
+  BorderColor #24527A
+  FontColor #17324D
+  DiamondBackgroundColor #FFF4CC
+  DiamondBorderColor #9A6B00
+  StartColor #24527A
+  EndColor #24527A
+}
+
+start
+
+:Receber o código do pedido e o
+AdicionarItemPedidoPecaDTO;
+
+if (Código da peça foi informado\ne quantidade é maior que zero?) then (não)
+  #FDECEC:Responder **400 Bad Request**;
+  stop
+else (sim)
+  :Tentar adicionar a peça ao pedido;
+
+  if (Pedido e peça foram encontrados?) then (não)
+    #FDECEC:Responder **404 Not Found**;
+    stop
+  else (sim)
+    :Converter o pedido atualizado para
+    PedidoPecasResponseDTO;
+    #E7F6EC:Responder **200 OK** com o DTO;
+    stop
+  endif
+endif
+
+legend right
+  Diagrama restrito à decisão do Controller.
+  Não representa repository, banco ou infraestrutura.
+endlegend
+
+@enduml
