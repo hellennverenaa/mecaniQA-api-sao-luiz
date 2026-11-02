@@ -2,9 +2,9 @@ package br.com.mecaniQA.api.controller;
 
 import br.com.mecaniQA.api.dto.ServicoRequestDTO;
 import br.com.mecaniQA.api.dto.ServicoResponseDTO;
-import br.com.mecaniQA.api.mapper.ServicoMapper;
-import br.com.mecaniQA.api.model.Servico;
-import br.com.mecaniQA.api.repository.ServicoRepository;
+import br.com.mecaniQA.api.exception.DadosInvalidosException;
+import br.com.mecaniQA.api.exception.RecursoNaoEncontradoException;
+import br.com.mecaniQA.api.service.ServicoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,48 +22,50 @@ import java.util.List;
 @RequestMapping("/api/servicos")
 public class ServicoController {
 
-    private final ServicoRepository servicoRepository;
-
-    public ServicoController() {
-        this.servicoRepository = ServicoRepository.getInstance();
-    }
+    private final ServicoService servicoService = new ServicoService();
 
     @PostMapping
     public ResponseEntity<ServicoResponseDTO> cadastrar(@RequestBody ServicoRequestDTO dto) {
-        Servico servico = servicoRepository.salvar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ServicoMapper.toResponse(servico));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(servicoService.cadastrar(dto));
+        } catch (DadosInvalidosException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<ServicoResponseDTO>> listar() {
-        return ResponseEntity.ok(servicoRepository.listarTodos().stream()
-                .map(ServicoMapper::toResponse)
-                .toList());
+        return ResponseEntity.ok(servicoService.listar());
     }
 
     @GetMapping("/{codigo}")
     public ResponseEntity<ServicoResponseDTO> buscarPorCodigo(@PathVariable("codigo") Long codigo) {
-        return servicoRepository.buscarPorCodigo(codigo)
-                .map(ServicoMapper::toResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(servicoService.buscarPorCodigo(codigo));
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{codigo}")
     public ResponseEntity<ServicoResponseDTO> atualizar(@PathVariable("codigo") Long codigo,
                                                         @RequestBody ServicoRequestDTO dto) {
-        return servicoRepository.atualizar(codigo, dto)
-                .map(ServicoMapper::toResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(servicoService.atualizar(codigo, dto));
+        } catch (DadosInvalidosException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{codigo}")
     public ResponseEntity<Void> excluir(@PathVariable("codigo") Long codigo) {
-        if (servicoRepository.excluir(codigo)) {
+        try {
+            servicoService.excluir(codigo);
             return ResponseEntity.noContent().build();
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.notFound().build();
     }
 }
