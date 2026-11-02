@@ -1,8 +1,6 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.database.ConexaoMySql;
-import br.com.mecaniQA.api.dto.PecaRequestDTO;
-import br.com.mecaniQA.api.mapper.PecaMapper;
 import br.com.mecaniQA.api.mapper.PecaResultSetMapper;
 import br.com.mecaniQA.api.model.Peca;
 
@@ -12,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -131,45 +128,6 @@ public class PecaRepository implements Repository<Peca, Long> {
         } catch (SQLException e) {
             throw new IllegalStateException("Erro ao verificar peça no MySQL", e);
         }
-    }
-
-    // Mantém os métodos usados pelos controllers até a adaptação da camada Service.
-    public Peca salvar(PecaRequestDTO dto) {
-        return save(PecaMapper.toModel(null, dto, LocalDateTime.now()));
-    }
-
-    public List<Peca> listarTodos() {
-        return findAll();
-    }
-
-    public Optional<Peca> buscarPorCodigo(Long codigo) {
-        return findById(codigo);
-    }
-
-    public synchronized Optional<Peca> atualizar(Long codigo, PecaRequestDTO dto) {
-        Optional<Peca> encontrada = findById(codigo);
-        encontrada.ifPresent(peca -> {
-            peca.setNome(dto.getNome());
-            peca.setCodigoBarras(dto.getCodigoBarras());
-            peca.setFornecedorMarca(dto.getFornecedorMarca());
-            peca.setQuantidadeEstoque(dto.getQuantidadeEstoque());
-            peca.setPrecoCusto(dto.getPrecoCusto());
-            peca.setPrecoVenda(dto.getPrecoVenda());
-            peca.setCategoria(dto.getCategoria());
-            peca.setTamanho(dto.getTamanho());
-            peca.setCor(dto.getCor());
-            peca.setDataAtualizacao(LocalDateTime.now());
-            update(peca);
-        });
-        return encontrada;
-    }
-
-    public synchronized boolean excluir(Long codigo) {
-        if (!existsById(codigo)) {
-            return false;
-        }
-        deleteById(codigo);
-        return true;
     }
 
     private void preencherDados(PreparedStatement statement, Peca peca) throws SQLException {
