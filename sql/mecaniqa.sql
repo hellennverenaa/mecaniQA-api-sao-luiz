@@ -48,10 +48,13 @@ CREATE TABLE IF NOT EXISTS pedidos_pecas (
 );
 
 CREATE TABLE IF NOT EXISTS itens_pedido_peca (
+    codigo BIGINT NOT NULL AUTO_INCREMENT,
     pedido_codigo BIGINT NOT NULL,
     peca_codigo BIGINT NOT NULL,
     quantidade INT NOT NULL,
-    PRIMARY KEY (pedido_codigo, peca_codigo),
+    PRIMARY KEY (codigo),
+    INDEX idx_itens_pedido_peca_pedido (pedido_codigo),
+    INDEX idx_itens_pedido_peca_peca (peca_codigo),
     CONSTRAINT fk_itens_pedido_peca_pedido
         FOREIGN KEY (pedido_codigo) REFERENCES pedidos_pecas (codigo),
     CONSTRAINT fk_itens_pedido_peca_peca

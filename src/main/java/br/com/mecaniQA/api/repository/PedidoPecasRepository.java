@@ -147,7 +147,7 @@ public class PedidoPecasRepository implements Repository<PedidoPecas, Long> {
     private void carregarItens(PedidoPecas pedido) {
         String sql = "SELECT p.*, i.quantidade FROM itens_pedido_peca i " +
                 "JOIN pecas p ON p.codigo = i.peca_codigo WHERE i.pedido_codigo = ? " +
-                "ORDER BY i.peca_codigo";
+                "ORDER BY i.codigo";
 
         try (Connection conexao = ConexaoMySql.abrir();
              PreparedStatement statement = conexao.prepareStatement(sql)) {
