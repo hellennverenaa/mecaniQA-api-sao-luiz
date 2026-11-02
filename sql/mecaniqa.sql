@@ -1,6 +1,6 @@
 -- OAT 3 - Persistencia de dados da MecaniQA (MySQL)
 -- Tabelas correspondentes exclusivamente aos modelos existentes nas OATs 1 e 2.
--- Os codigos das entidades continuam sendo definidos pela aplicacao.
+-- Os codigos das entidades sao gerados pelo MySQL no cadastro.
 -- Nao ha insercoes iniciais previstas nos documentos.
 
 CREATE DATABASE IF NOT EXISTS mecaniqa
@@ -10,7 +10,7 @@ CREATE DATABASE IF NOT EXISTS mecaniqa
 USE mecaniqa;
 
 CREATE TABLE IF NOT EXISTS pecas (
-    codigo BIGINT NOT NULL,
+    codigo BIGINT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(255),
     codigo_barras VARCHAR(255) NOT NULL,
     fornecedor_marca VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS pecas (
 );
 
 CREATE TABLE IF NOT EXISTS servicos (
-    codigo BIGINT NOT NULL,
+    codigo BIGINT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
     tempo_estimado_minutos INT NOT NULL,
     custo_tabelado DOUBLE NOT NULL,
@@ -36,13 +36,13 @@ CREATE TABLE IF NOT EXISTS servicos (
 );
 
 CREATE TABLE IF NOT EXISTS ordens_servico (
-    codigo BIGINT NOT NULL,
+    codigo BIGINT NOT NULL AUTO_INCREMENT,
     status VARCHAR(50) NOT NULL,
     PRIMARY KEY (codigo)
 );
 
 CREATE TABLE IF NOT EXISTS pedidos_pecas (
-    codigo BIGINT NOT NULL,
+    codigo BIGINT NOT NULL AUTO_INCREMENT,
     status VARCHAR(50) NOT NULL,
     PRIMARY KEY (codigo)
 );
