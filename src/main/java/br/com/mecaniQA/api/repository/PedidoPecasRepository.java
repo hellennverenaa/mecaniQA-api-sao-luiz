@@ -1,7 +1,7 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.database.ConexaoMySql;
-import br.com.mecaniQA.api.mapper.PecaResultSetMapper;
+import br.com.mecaniQA.api.mapper.ItemPedidoPecaResultSetMapper;
 import br.com.mecaniQA.api.mapper.PedidoPecasResultSetMapper;
 import br.com.mecaniQA.api.model.ItemPedidoPeca;
 import br.com.mecaniQA.api.model.PedidoPecas;
@@ -155,10 +155,7 @@ public class PedidoPecasRepository implements Repository<PedidoPecas, Long> {
             try (ResultSet resultado = statement.executeQuery()) {
                 List<ItemPedidoPeca> itens = new ArrayList<>();
                 while (resultado.next()) {
-                    itens.add(new ItemPedidoPeca(
-                            PecaResultSetMapper.toModel(resultado),
-                            resultado.getInt("quantidade")
-                    ));
+                    itens.add(ItemPedidoPecaResultSetMapper.toModel(resultado));
                 }
                 pedido.setItens(itens);
             }

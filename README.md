@@ -3,7 +3,8 @@
 > **Equipe:** São Luiz  
 > **Disciplina:** Desenvolvimento Web Orientado a Objetos (UniFTC)  
 > **Professor / Avaliador:** Prof. Lucas Almeida Silva (`lasilva`)  
-> **Prazo do Entregável Técnico:** 29/08/2026  
+> **Prazo do Entregável Técnico da OAT 3:** 25/10/2026<br>
+> **Prazo da Apresentação da OAT 3:** até 18/11/2026
 
 ---
 
@@ -45,6 +46,12 @@ export DB_USER='usuario_do_mysql'
 export DB_PASSWORD='senha_local'
 ./gradlew bootRun
 ```
+
+### Testes automatizados
+
+Execute `./gradlew test` (`.\gradlew.bat test` no Windows). Com Docker disponível,
+o Testcontainers inicia um MySQL temporário e executa o CRUD completo dos repositórios.
+Sem Docker, os testes unitários são executados e somente a integração MySQL é ignorada.
 
 ## Diagrama de Classes UML
 
