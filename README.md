@@ -1,4 +1,4 @@
-# MecaniQA — Web API Fundacional (OAT 1)
+# MecaniQA — API (OAT 1, OAT 2 e OAT 3)
 
 > **Equipe:** São Luiz  
 > **Disciplina:** Desenvolvimento Web Orientado a Objetos (UniFTC)  
@@ -11,13 +11,13 @@
 
 A **MecâniQA API** é uma solução de backend desenvolvida com **Java e Spring Boot** para o gerenciamento de catálogos de autopeças e tabelas de serviços automotivos.
 
-O projeto segue estritamente as restrições arquiteturais da **OAT 1**, priorizando o domínio prático da Programação Orientada a Objetos em memória sem o uso de bancos de dados relacionais ou injeção automática de dependências.
+Na **OAT 1**, os registros eram armazenados em memória. Na **OAT 2**, foram acrescentados os fluxos de ordens de serviço e pedidos de peças. Na **OAT 3**, a persistência passou a utilizar **MySQL com JDBC nativo e SQL manual**, mantendo os modelos, os DTOs e os endpoints das etapas anteriores.
 
 ---
 
-## Restrições Arquiteturais e Decisões de Engenharia
+## Histórico da OAT 1 — Restrições Arquiteturais e Decisões de Engenharia
 
-- **Persistência 100% em Memória:** Não utiliza bancos de dados físicos, instâncias embarcadas (H2/SQLite) ou interfaces Spring Data JPA.
+- **Persistência em memória na OAT 1:** A primeira entrega não utilizava banco de dados físico. Esse comportamento foi substituído pela persistência MySQL na OAT 3.
 - **Isolamento de Injeção de Dependência:** Proibido o uso de `@Autowired`, `@Component` ou `@Repository` gerenciados pelo framework Spring nos repositórios.
 - **Padrão de Projeto Singleton Manual:** Classes de repositório (`PecaRepository` e `ServicoRepository`) implementadas com construtor `private`, atributo `private static NomeRepository INSTANCE` e método de acesso global `public static synchronized NomeRepository getInstance()`.
 - **Controle de Concorrência (Thread-Safety):** Métodos de escrita, geração sequencial de identificadores e mutação de listas internas utilizam o modificador `synchronized`.
@@ -25,6 +25,26 @@ O projeto segue estritamente as restrições arquiteturais da **OAT 1**, prioriz
 - **Isolamento de Entrada com DTOs:** Uso de `PecaRequestDTO` e `ServicoRequestDTO` para receber dados externos sem expor atributos de controle gerados pela aplicação (`codigo`, `dataCadastro`, `dataCriacao` e `dataAtualizacao`).
 
 ---
+
+## Persistência na OAT 3
+
+- Banco de dados: **MySQL**, com criação das cinco tabelas em `sql/mecaniqa.sql`.
+- Acesso aos dados: **JDBC nativo**, com comandos SQL escritos manualmente e interface `Repository<T, ID>` fornecida pelo professor.
+- Os Controllers chamam a camada Service; as operações SQL ficam nos Repositories.
+- A aplicação lê `DB_URL`, `DB_USER` e `DB_PASSWORD` das variáveis de ambiente. As credenciais não devem ser versionadas.
+
+### Configuração local
+
+1. Inicie o MySQL e execute `sql/mecaniqa.sql` para criar o banco e suas tabelas.
+2. **Somente se o banco já tiver sido criado com a chave composta antiga**, execute uma vez `sql/migracao-itens-pedido-peca.sql`. A migração permite adicionar a mesma peça mais de uma vez ao pedido, como na OAT 2. Não execute essa migração em uma instalação nova, que já usa o script atualizado.
+3. Configure as variáveis de ambiente com os dados do seu MySQL e execute `./gradlew bootRun`.
+
+```bash
+export DB_URL='jdbc:mysql://127.0.0.1:3306/mecaniqa'
+export DB_USER='usuario_do_mysql'
+export DB_PASSWORD='senha_local'
+./gradlew bootRun
+```
 
 ## Diagrama de Classes UML
 
@@ -75,13 +95,13 @@ O ciclo de vida da sprint, o refinamento das User Stories e a esteira de Pull Re
 
 ### Pré-requisitos
 
-- Java JDK 17 ou superior instalado.
+- Java JDK 21 instalado (versão configurada no Gradle).
 - Gradle Wrapper (incluso no projeto).
 
 ### Comandos de Inicialização
 
 1. Clonar o repositório oficial:
    ```bash
-   git clone [https://github.com/hellennverenaa/mecaniQA-api-sao-luiz.git](https://github.com/hellennverenaa/mecaniQA-api-sao-luiz.git)
+   git clone https://github.com/hellennverenaa/mecaniQA-api-sao-luiz.git
    cd mecaniQA-api-sao-luiz
    ```

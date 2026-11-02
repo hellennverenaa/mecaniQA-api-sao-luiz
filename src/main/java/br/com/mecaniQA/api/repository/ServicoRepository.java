@@ -1,8 +1,6 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.database.ConexaoMySql;
-import br.com.mecaniQA.api.dto.ServicoRequestDTO;
-import br.com.mecaniQA.api.mapper.ServicoMapper;
 import br.com.mecaniQA.api.mapper.ServicoResultSetMapper;
 import br.com.mecaniQA.api.model.Servico;
 
@@ -12,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -128,39 +125,6 @@ public class ServicoRepository implements Repository<Servico, Long> {
         } catch (SQLException e) {
             throw new IllegalStateException("Erro ao verificar serviço no MySQL", e);
         }
-    }
-
-    // Mantém os métodos usados pelos controllers até a adaptação da camada Service.
-    public Servico salvar(ServicoRequestDTO dto) {
-        return save(ServicoMapper.toModel(null, dto, LocalDateTime.now()));
-    }
-
-    public List<Servico> listarTodos() {
-        return findAll();
-    }
-
-    public Optional<Servico> buscarPorCodigo(Long codigo) {
-        return findById(codigo);
-    }
-
-    public synchronized Optional<Servico> atualizar(Long codigo, ServicoRequestDTO dto) {
-        Optional<Servico> encontrado = findById(codigo);
-        encontrado.ifPresent(servico -> {
-            servico.setNome(dto.getNome());
-            servico.setTempoEstimadoMinutos(dto.getTempoEstimadoMinutos());
-            servico.setCustoTabelado(dto.getCustoTabelado());
-            servico.setDataAtualizacao(LocalDateTime.now());
-            update(servico);
-        });
-        return encontrado;
-    }
-
-    public synchronized boolean excluir(Long codigo) {
-        if (!existsById(codigo)) {
-            return false;
-        }
-        deleteById(codigo);
-        return true;
     }
 
     private void preencherDados(PreparedStatement statement, Servico servico) throws SQLException {

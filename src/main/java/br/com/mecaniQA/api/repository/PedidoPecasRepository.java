@@ -1,14 +1,10 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.database.ConexaoMySql;
-import br.com.mecaniQA.api.dto.AdicionarItemPedidoPecaDTO;
-import br.com.mecaniQA.api.dto.PedidoPecasRequestDTO;
 import br.com.mecaniQA.api.mapper.PecaResultSetMapper;
-import br.com.mecaniQA.api.mapper.PedidoPecasMapper;
 import br.com.mecaniQA.api.mapper.PedidoPecasResultSetMapper;
 import br.com.mecaniQA.api.model.ItemPedidoPeca;
 import br.com.mecaniQA.api.model.PedidoPecas;
-import br.com.mecaniQA.api.model.StatusPedidoPecas;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -151,7 +147,7 @@ public class PedidoPecasRepository implements Repository<PedidoPecas, Long> {
     private void carregarItens(PedidoPecas pedido) {
         String sql = "SELECT p.*, i.quantidade FROM itens_pedido_peca i " +
                 "JOIN pecas p ON p.codigo = i.peca_codigo WHERE i.pedido_codigo = ? " +
-                "ORDER BY i.peca_codigo";
+                "ORDER BY i.codigo";
 
         try (Connection conexao = ConexaoMySql.abrir();
              PreparedStatement statement = conexao.prepareStatement(sql)) {
@@ -171,44 +167,18 @@ public class PedidoPecasRepository implements Repository<PedidoPecas, Long> {
         }
     }
 
-    // Mantém as operações da OAT 2 até a criação da camada Service.
-    public PedidoPecas salvar(PedidoPecasRequestDTO dto) {
-        return save(PedidoPecasMapper.toModel(null, dto));
-    }
-
-    public Optional<PedidoPecas> buscarPorCodigo(Long codigo) {
-        return findById(codigo);
-    }
-
-    public synchronized Optional<PedidoPecas> adicionarItem(Long codigo,
-                                                             AdicionarItemPedidoPecaDTO dto) {
-        if (!existsById(codigo) ||
-                !PecaRepository.getInstance().existsById(dto.getCodigoPeca())) {
-            return Optional.empty();
-        }
-
+    public synchronized void adicionarItem(Long codigoPedido, Long codigoPeca, Integer quantidade) {
         String sql = "INSERT INTO itens_pedido_peca (pedido_codigo, peca_codigo, quantidade) " +
                 "VALUES (?, ?, ?)";
 
         try (Connection conexao = ConexaoMySql.abrir();
              PreparedStatement statement = conexao.prepareStatement(sql)) {
-            statement.setLong(1, codigo);
-            statement.setLong(2, dto.getCodigoPeca());
-            statement.setInt(3, dto.getQuantidade());
+            statement.setLong(1, codigoPedido);
+            statement.setLong(2, codigoPeca);
+            statement.setInt(3, quantidade);
             statement.executeUpdate();
-            return findById(codigo);
         } catch (SQLException e) {
             throw new IllegalStateException("Erro ao adicionar peça ao pedido no MySQL", e);
         }
-    }
-
-    public synchronized Optional<PedidoPecas> atualizarStatus(Long codigo,
-                                                               StatusPedidoPecas status) {
-        Optional<PedidoPecas> encontrado = findById(codigo);
-        encontrado.ifPresent(pedido -> {
-            pedido.setStatus(status);
-            update(pedido);
-        });
-        return encontrado;
     }
 }

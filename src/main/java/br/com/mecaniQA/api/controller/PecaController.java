@@ -2,9 +2,9 @@ package br.com.mecaniQA.api.controller;
 
 import br.com.mecaniQA.api.dto.PecaRequestDTO;
 import br.com.mecaniQA.api.dto.PecaResponseDTO;
-import br.com.mecaniQA.api.mapper.PecaMapper;
-import br.com.mecaniQA.api.model.Peca;
-import br.com.mecaniQA.api.repository.PecaRepository;
+import br.com.mecaniQA.api.exception.DadosInvalidosException;
+import br.com.mecaniQA.api.exception.RecursoNaoEncontradoException;
+import br.com.mecaniQA.api.service.PecaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,48 +22,50 @@ import java.util.List;
 @RequestMapping("/api/pecas")
 public class PecaController {
 
-    private final PecaRepository pecaRepository;
-
-    public PecaController() {
-        this.pecaRepository = PecaRepository.getInstance();
-    }
+    private final PecaService pecaService = new PecaService();
 
     @PostMapping
     public ResponseEntity<PecaResponseDTO> cadastrar(@RequestBody PecaRequestDTO dto) {
-        Peca peca = pecaRepository.salvar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(PecaMapper.toResponse(peca));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(pecaService.cadastrar(dto));
+        } catch (DadosInvalidosException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<PecaResponseDTO>> listar() {
-        return ResponseEntity.ok(pecaRepository.listarTodos().stream()
-                .map(PecaMapper::toResponse)
-                .toList());
+        return ResponseEntity.ok(pecaService.listar());
     }
 
     @GetMapping("/{codigo}")
     public ResponseEntity<PecaResponseDTO> buscarPorCodigo(@PathVariable("codigo") Long codigo) {
-        return pecaRepository.buscarPorCodigo(codigo)
-                .map(PecaMapper::toResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(pecaService.buscarPorCodigo(codigo));
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{codigo}")
     public ResponseEntity<PecaResponseDTO> atualizar(@PathVariable("codigo") Long codigo,
                                                      @RequestBody PecaRequestDTO dto) {
-        return pecaRepository.atualizar(codigo, dto)
-                .map(PecaMapper::toResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(pecaService.atualizar(codigo, dto));
+        } catch (DadosInvalidosException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{codigo}")
     public ResponseEntity<Void> excluir(@PathVariable("codigo") Long codigo) {
-        if (pecaRepository.excluir(codigo)) {
+        try {
+            pecaService.excluir(codigo);
             return ResponseEntity.noContent().build();
+        } catch (RecursoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.notFound().build();
     }
 }
