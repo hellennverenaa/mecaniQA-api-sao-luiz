@@ -1,11 +1,8 @@
 package br.com.mecaniQA.api.repository;
 
 import br.com.mecaniQA.api.database.ConexaoMySql;
-import br.com.mecaniQA.api.dto.OrdemServicoRequestDTO;
-import br.com.mecaniQA.api.mapper.OrdemServicoMapper;
 import br.com.mecaniQA.api.mapper.OrdemServicoResultSetMapper;
 import br.com.mecaniQA.api.model.OrdemServico;
-import br.com.mecaniQA.api.model.StatusOrdemServico;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -127,22 +124,4 @@ public class OrdemServicoRepository implements Repository<OrdemServico, Long> {
         }
     }
 
-    // Mantém os métodos utilizados na OAT 2 até a criação da camada Service.
-    public OrdemServico salvar(OrdemServicoRequestDTO dto) {
-        return save(OrdemServicoMapper.toModel(null, dto));
-    }
-
-    public Optional<OrdemServico> buscarPorCodigo(Long codigo) {
-        return findById(codigo);
-    }
-
-    public synchronized Optional<OrdemServico> atualizarStatus(Long codigo,
-                                                                StatusOrdemServico status) {
-        Optional<OrdemServico> encontrada = findById(codigo);
-        encontrada.ifPresent(ordem -> {
-            ordem.setStatus(status);
-            update(ordem);
-        });
-        return encontrada;
-    }
 }
